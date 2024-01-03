@@ -1,4 +1,4 @@
-﻿namespace Library_Services.Interface
+﻿namespace LibraryAndService.Interface
 {
     public interface IEntityManager
     {

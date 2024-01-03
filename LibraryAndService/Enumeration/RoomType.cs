@@ -1,4 +1,4 @@
-﻿namespace Library_Services.Enumeration
+﻿namespace LibraryAndService.Enumeration
 {
     public enum RoomType
     {
