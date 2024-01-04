@@ -1,4 +1,6 @@
-﻿using LibraryAndService.Menu;
+﻿using LibraryAndService.Data;
+using LibraryAndService.Menu;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace HotelBooking
@@ -7,9 +9,21 @@ namespace HotelBooking
     {
         public static void Run()
         {
-            //var builder = new ConfigurationBuilder()
-            //   .AddJsonFile($"appsettings.json", true, true);
-            //var config = builder.Build();
+            // Boiler Plate Code
+            var builder = new ConfigurationBuilder()
+               .AddJsonFile($"Appsettings.json", true, true);
+            var config = builder.Build();
+
+            DbContextOptionsBuilder<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>();
+            var connectionString = config.GetConnectionString("DefaultConnection");
+            options.UseSqlServer(connectionString);
+
+            using (var dbContext = new ApplicationDbContext(options.Options))
+            {
+                var dataPopulator = new DataPopulator();
+                dataPopulator.MigrateAndPopulate(dbContext);
+            }
+
 
             do
             {
@@ -40,11 +54,11 @@ namespace HotelBooking
                 switch (key)
                 {
                     case '1':
-                        booking.Menu();
+                        booking.Menu(options);
                         break;
 
                     case '2':
-                        guest.Menu();
+                        guest.Menu(options);
                         break;
 
                     case '3':
@@ -57,7 +71,9 @@ namespace HotelBooking
                         break;
 
                     default:
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Invalid selection. Please choose a valid option.");
+                        Console.ResetColor();
                         break;
                 }
             } while (true);
