@@ -17,16 +17,16 @@ namespace LibraryAndService.Data
         private void PopulateGuests(ApplicationDbContext dbContext)
         {
             if (!dbContext.Guest.Any(g => g.FirstName == "Andrés"))
-                dbContext.Guest.Add(new Guest("Andrés", "Santana", "070 738 95 08", "andressantana99@hotmail.se", 3000, true));
+                dbContext.Guest.Add(new Guest("Andrés", "Santana", "070 738 95 08", "andressantana99@hotmail.se", 100, false, true));
 
             if (!dbContext.Guest.Any(g => g.FirstName == "Rickard"))
-                dbContext.Guest.Add(new Guest("Rickard", "Rickardson", "070 111 22 33", "rickardrickardson@email.com", 41, true));
+                dbContext.Guest.Add(new Guest("Rickard", "Rickardson", "070 111 22 33", "rickardrickardson@email.com", 41, false, true));
 
             if (!dbContext.Guest.Any(g => g.FirstName == "Rikard"))
-                dbContext.Guest.Add(new Guest("Rikard", "Rikardson", "070 111 22 33", "rickardrickardson@email.com", 40, true));
+                dbContext.Guest.Add(new Guest("Rikard", "Rikardson", "070 111 22 33", "rickardrickardson@email.com", 40, false, true));
 
             if (!dbContext.Guest.Any(g => g.FirstName == "Rikkard"))
-                dbContext.Guest.Add(new Guest("Rikkard", "Rikkardson", "070 111 22 33", "rikkardrickardson@email.com", null, true));
+                dbContext.Guest.Add(new Guest("Rikkard", "Rikkardson", "070 111 22 33", "rikkardrickardson@email.com", null, false, true));
         }
 
         private void PopulateRooms(ApplicationDbContext dbContext)

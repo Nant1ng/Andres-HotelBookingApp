@@ -21,7 +21,7 @@ namespace LibraryAndService.Migrations
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: true),
+                    Age = table.Column<byte>(type: "tinyint", nullable: true),
                     Booked = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -53,8 +53,8 @@ namespace LibraryAndService.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoomName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    RoomType = table.Column<int>(type: "int", nullable: false),
-                    RoomSize = table.Column<int>(type: "int", nullable: false),
+                    RoomType = table.Column<byte>(type: "tinyint", nullable: false),
+                    RoomSize = table.Column<byte>(type: "tinyint", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -70,7 +70,8 @@ namespace LibraryAndService.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    OneExtraBed = table.Column<bool>(type: "bit", nullable: false),
+                    AmountOfGuest = table.Column<byte>(type: "tinyint", nullable: false),
+                    ExtraBed = table.Column<byte>(type: "tinyint", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     GuestId = table.Column<int>(type: "int", nullable: false),
                     RoomId = table.Column<int>(type: "int", nullable: false),

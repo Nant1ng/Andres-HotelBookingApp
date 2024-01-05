@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryAndService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240105102815_Initial migration")]
+    [Migration("20240105145351_Initial migration")]
     partial class Initialmigration
     {
         /// <inheritdoc />
@@ -33,8 +33,14 @@ namespace LibraryAndService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<byte>("AmountOfGuest")
+                        .HasColumnType("tinyint");
+
                     b.Property<DateOnly>("EndDate")
                         .HasColumnType("date");
+
+                    b.Property<byte>("ExtraBed")
+                        .HasColumnType("tinyint");
 
                     b.Property<int>("GuestId")
                         .HasColumnType("int");
@@ -43,9 +49,6 @@ namespace LibraryAndService.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("OneExtraBed")
                         .HasColumnType("bit");
 
                     b.Property<int>("RoomId")
@@ -73,8 +76,8 @@ namespace LibraryAndService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Age")
-                        .HasColumnType("int");
+                    b.Property<byte?>("Age")
+                        .HasColumnType("tinyint");
 
                     b.Property<bool>("Booked")
                         .HasColumnType("bit");
@@ -148,11 +151,11 @@ namespace LibraryAndService.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<int>("RoomSize")
-                        .HasColumnType("int");
+                    b.Property<byte>("RoomSize")
+                        .HasColumnType("tinyint");
 
-                    b.Property<int>("RoomType")
-                        .HasColumnType("int");
+                    b.Property<byte>("RoomType")
+                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
 
