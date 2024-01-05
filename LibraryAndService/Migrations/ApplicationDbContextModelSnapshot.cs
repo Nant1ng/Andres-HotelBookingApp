@@ -25,10 +25,19 @@ namespace LibraryAndService.Migrations
             modelBuilder.Entity("LibraryAndService.Models.Booking", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateOnly>("EndDate")
                         .HasColumnType("date");
+
+                    b.Property<int>("GuestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -36,10 +45,19 @@ namespace LibraryAndService.Migrations
                     b.Property<bool>("OneExtraBed")
                         .HasColumnType("bit");
 
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GuestId");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("RoomId");
 
                     b.ToTable("Booking");
                 });
@@ -54,6 +72,9 @@ namespace LibraryAndService.Migrations
 
                     b.Property<int?>("Age")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Booked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -91,9 +112,6 @@ namespace LibraryAndService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BookingId")
-                        .HasColumnType("int");
-
                     b.Property<DateOnly>("Deadline")
                         .HasColumnType("date");
 
@@ -105,8 +123,6 @@ namespace LibraryAndService.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId");
-
                     b.ToTable("Invoice");
                 });
 
@@ -117,9 +133,6 @@ namespace LibraryAndService.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("BookingId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -140,42 +153,33 @@ namespace LibraryAndService.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId");
-
                     b.ToTable("Room");
                 });
 
             modelBuilder.Entity("LibraryAndService.Models.Booking", b =>
                 {
                     b.HasOne("LibraryAndService.Models.Guest", "Guest")
-                        .WithOne("Booking")
-                        .HasForeignKey("LibraryAndService.Models.Booking", "Id")
+                        .WithMany("Booking")
+                        .HasForeignKey("GuestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryAndService.Models.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryAndService.Models.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Guest");
-                });
 
-            modelBuilder.Entity("LibraryAndService.Models.Invoice", b =>
-                {
-                    b.HasOne("LibraryAndService.Models.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Invoice");
 
-                    b.Navigation("Booking");
-                });
-
-            modelBuilder.Entity("LibraryAndService.Models.Room", b =>
-                {
-                    b.HasOne("LibraryAndService.Models.Booking", null)
-                        .WithMany("Room")
-                        .HasForeignKey("BookingId");
-                });
-
-            modelBuilder.Entity("LibraryAndService.Models.Booking", b =>
-                {
                     b.Navigation("Room");
                 });
 

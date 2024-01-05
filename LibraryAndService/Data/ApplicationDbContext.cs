@@ -28,18 +28,5 @@ namespace LibraryAndService.Data
                 optionsBuilder.UseSqlServer(@"Server=.;Database=HotelDB;Trusted_Connection=True;TrustServerCertificate=true;");
             }
         }
-
-        // Fick ett Error Stefan aldrig sett förut... 
-        // Löste det med Stackoverflow, https://stackoverflow.com/questions/51808912/the-child-dependent-side-could-not-be-determined-for-the-one-to-one-relationship
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Guest>()
-            .HasOne(a => a.Booking)
-            .WithOne(a => a.Guest)
-            .HasForeignKey<Booking>(c => c.Id);
-        }
-
     }
 }
