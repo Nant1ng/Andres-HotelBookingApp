@@ -28,5 +28,12 @@ namespace LibraryAndService.Data
                 optionsBuilder.UseSqlServer(@"Server=.;Database=HotelDB;Trusted_Connection=True;TrustServerCertificate=true;");
             }
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Booking>().Property(b => b.ExtraBed).HasColumnType("tinyint");
+            modelBuilder.Entity<Room>().Property(r => r.RoomType).HasColumnType("tinyint");
+        }
     }
 }
