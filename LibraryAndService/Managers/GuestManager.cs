@@ -248,8 +248,12 @@ namespace LibraryAndService.Managers
                             guestToDelete.IsActive = false;
                             dbContext.SaveChanges();
 
-                            Console.WriteLine($"Guest with Id {guestId} has been soft-deleted.");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine($"Successfully soft-deleted Guest with Id {guestId}.");
+                            Console.ResetColor();
+
                             isRunning = false;
+
                             Console.WriteLine();
                             Console.WriteLine("Press any key to go back.");
                             Console.ReadKey();
