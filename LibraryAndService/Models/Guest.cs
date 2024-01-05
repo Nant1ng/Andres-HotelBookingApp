@@ -14,18 +14,19 @@ namespace LibraryAndService.Models
         [MaxLength(250)]
         public string Email { get; set; }
         [Range(0, 100)]
-        public int? Age { get; set; }
+        public byte? Age { get; set; }
         public List<Booking?> Booking { get; set; }
-        public bool Booked { get; set; } = false; 
+        public bool Booked { get; set; } = false;
         public bool IsActive { get; set; }
 
-        public Guest(string firstName, string lastName, string phoneNumber, string email, int? age, bool isActive)
+        public Guest(string firstName, string lastName, string phoneNumber, string email, byte? age, bool booked, bool isActive)
         {
             FirstName = firstName;
             LastName = lastName;
             PhoneNumber = phoneNumber;
             Email = email;
             Age = age;
+            Booked = booked;
             IsActive = isActive;
         }
     }
