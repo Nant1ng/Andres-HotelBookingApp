@@ -26,6 +26,7 @@ namespace LibraryAndService.Models
             PhoneNumber = phoneNumber;
             Email = email;
             Age = age;
+            Booking = new List<Booking?>();
             Booked = booked;
             IsActive = isActive;
         }

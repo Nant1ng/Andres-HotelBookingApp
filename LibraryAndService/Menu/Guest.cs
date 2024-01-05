@@ -1,8 +1,12 @@
-﻿namespace LibraryAndService.Menu
+﻿using LibraryAndService.Data;
+using LibraryAndService.Managers;
+using Microsoft.EntityFrameworkCore;
+
+namespace LibraryAndService.Menu
 {
     public class Guest
     {
-        public void Menu()
+        public void Menu(DbContextOptionsBuilder<ApplicationDbContext> options)
         {
             bool isRunning = true;
 
@@ -26,32 +30,40 @@
 
                                                     [5] Delete a Guest
 
+                                                    [6] Recover a Guest
+
                                                     [0] Go Back
                 ");
 
                 char key = Console.ReadKey().KeyChar;
                 Console.Clear();
 
+                GuestManager guestManager = new GuestManager();
+
                 switch (key)
                 {
                     case '1':
-                        Console.WriteLine("You pressed 1 - Booking");
+                        guestManager.Create(options);
                         break;
 
                     case '2':
-                        Console.WriteLine("You pressed 2 - Guest");
+                        guestManager.GetAll(options);
                         break;
 
                     case '3':
-                        Console.WriteLine("You pressed 3 - Room");
+                        guestManager.GetOne(options);
                         break;
 
                     case '4':
-                        Console.WriteLine("You pressed 3 - Room");
+                        guestManager.Update(options);
                         break;
 
                     case '5':
-                        Console.WriteLine("You pressed 3 - Room");
+                        guestManager.Delete(options);
+                        break;
+
+                    case '6':
+                        guestManager.Delete(options);
                         break;
 
                     case '0':
