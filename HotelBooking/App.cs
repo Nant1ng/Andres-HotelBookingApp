@@ -62,7 +62,7 @@ namespace HotelBooking
                         break;
 
                     case '3':
-                        room.Menu();
+                        room.Menu(options);
                         break;
 
                     case '0':

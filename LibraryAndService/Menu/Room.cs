@@ -1,8 +1,12 @@
-﻿namespace LibraryAndService.Menu
+﻿using LibraryAndService.Data;
+using LibraryAndService.Managers;
+using Microsoft.EntityFrameworkCore;
+
+namespace LibraryAndService.Menu
 {
     public class Room
     {
-        public void Menu()
+        public void Menu(DbContextOptionsBuilder<ApplicationDbContext> options)
         {
             bool isRunning = true;
 
@@ -27,33 +31,45 @@
 
                                                     [5] Delete a Room
 
+                                                    [6] Recover a Room
+
+                                                    [7] Hard Delete a Room
+
                                                     [0] Go Back
                 ");
 
                 char key = Console.ReadKey().KeyChar;
                 Console.Clear();
 
+                RoomManager roomManager = new RoomManager();
+
                 switch (key)
                 {
                     case '1':
-                        Console.WriteLine("You pressed 1 - Booking");
+                        roomManager.Create(options);
                         break;
 
                     case '2':
-                        Console.WriteLine("You pressed 2 - Guest");
+                        roomManager.GetAll(options);
                         break;
 
                     case '3':
-                        Console.WriteLine("You pressed 3 - Room");
+                        roomManager.GetOne(options);
                         break;
 
                     case '4':
-                        Console.WriteLine("You pressed 3 - Room");
+                        roomManager.Update(options);
                         break;
 
                     case '5':
-                        Console.WriteLine("You pressed 3 - Room");
+                        roomManager.Delete(options);
                         break;
+                    case '6':
+                        roomManager.Recover(options);
+                        break;
+                    //case '7':
+                    //  roomManager.HardDelete(options);
+                    //break;
 
                     case '0':
                         isRunning = false;
