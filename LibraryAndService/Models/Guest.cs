@@ -16,10 +16,9 @@ namespace LibraryAndService.Models
         [Range(0, 100)]
         public byte? Age { get; set; }
         public List<Booking?> Booking { get; set; }
-        public bool Booked { get; set; } = false;
         public bool IsActive { get; set; }
 
-        public Guest(string firstName, string lastName, string phoneNumber, string email, byte? age, bool booked, bool isActive)
+        public Guest(string firstName, string lastName, string phoneNumber, string email, byte? age, bool isActive)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -27,7 +26,6 @@ namespace LibraryAndService.Models
             Email = email;
             Age = age;
             Booking = new List<Booking?>();
-            Booked = booked;
             IsActive = isActive;
         }
     }

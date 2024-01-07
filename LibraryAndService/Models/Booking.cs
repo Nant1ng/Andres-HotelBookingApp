@@ -14,8 +14,6 @@ namespace LibraryAndService.Models
         public Room Room { get; set; }
         public Invoice Invoice { get; set; }
 
-
-
         public Booking(DateOnly startDate, DateOnly endDate, byte amountOfGuest, AmountOfBed extraBed, bool isActive)
         {
             StartDate = startDate;
