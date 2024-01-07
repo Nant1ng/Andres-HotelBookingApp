@@ -67,6 +67,7 @@ namespace LibraryAndService.Data
                         Total = room.Price,
                         Deadline = deadline,
                         IsPayed = false,
+                        IsActive = true,
                     };
                     dbContext.Invoice.Add(invoice);
                     dbContext.Booking.Add(new Booking(checkInDate, checkOutDate, 1, AmountOfBed.OneExtraBed, true)

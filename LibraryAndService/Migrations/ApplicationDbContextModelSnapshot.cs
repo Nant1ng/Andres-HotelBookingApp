@@ -115,6 +115,9 @@ namespace LibraryAndService.Migrations
                     b.Property<DateOnly>("Deadline")
                         .HasColumnType("date");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsPayed")
                         .HasColumnType("bit");
 

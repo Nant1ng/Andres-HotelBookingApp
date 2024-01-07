@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryAndService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240107194046_Initial Migration")]
+    [Migration("20240107214702_Initial Migration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -117,6 +117,9 @@ namespace LibraryAndService.Migrations
 
                     b.Property<DateOnly>("Deadline")
                         .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsPayed")
                         .HasColumnType("bit");

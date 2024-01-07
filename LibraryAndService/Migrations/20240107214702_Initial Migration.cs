@@ -37,7 +37,8 @@ namespace LibraryAndService.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Deadline = table.Column<DateOnly>(type: "date", nullable: false),
-                    IsPayed = table.Column<bool>(type: "bit", nullable: false)
+                    IsPayed = table.Column<bool>(type: "bit", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -41,6 +41,8 @@ namespace HotelBooking
 
                                                     [3] Room
 
+                                                    [4] Invoice
+
                                                     [0] Exit  
                 ");
 
@@ -50,6 +52,7 @@ namespace HotelBooking
                 Booking booking = new Booking();
                 Guest guest = new Guest();
                 Room room = new Room();
+                Invoice invoice = new Invoice();
 
                 switch (key)
                 {
@@ -63,6 +66,10 @@ namespace HotelBooking
 
                     case '3':
                         room.Menu(options);
+                        break;
+
+                    case '4':
+                        invoice.Menu(options);
                         break;
 
                     case '0':

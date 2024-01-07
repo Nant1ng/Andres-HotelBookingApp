@@ -9,5 +9,6 @@ namespace LibraryAndService.Models
         public decimal Total { get; set; }
         public DateOnly Deadline { get; set; }
         public bool IsPayed { get; set; }
+        public bool IsActive { get; set; }
     }
 }
