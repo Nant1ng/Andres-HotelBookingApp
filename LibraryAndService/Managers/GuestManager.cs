@@ -67,6 +67,13 @@ namespace LibraryAndService.Managers
             using (var dbContext = new ApplicationDbContext(options.Options))
             {
                 Console.WriteLine("Get a Guest.");
+
+                foreach (Guest guest in dbContext.Guest)
+                {
+                    Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}");
+                }
+                Console.WriteLine();
+
                 Console.WriteLine("Search for a Guest by writing their First Name and the four last digits of their Phone Number");
                 Console.WriteLine("Separate the First Name and numbers with ,");
                 Console.Write("First Name and 4 digits: ");
@@ -203,22 +210,31 @@ namespace LibraryAndService.Managers
                                             guestToUpdate.IsActive = true;
                                             dbContext.SaveChanges();
                                         }
+                                        Console.ForegroundColor = ConsoleColor.Green;
                                         Console.WriteLine($"Guest with Id {guestId} has been update.");
+                                        Console.ResetColor();
+
+                                        Console.WriteLine();
+                                        Console.WriteLine("Press any key to go back.");
+                                        Console.ReadKey();
+                                        Console.Clear();
                                     }
                                 }
                             }
                         }
                         else
                         {
+                            Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine($"No Guest found with Id {guestId}.");
                         }
                     }
                     else
                     {
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Invalid input. Please enter a valid Guest Id.");
                     }
-                    Console.ReadKey();
-                    Console.Clear();
                 }
             }
 
@@ -234,7 +250,7 @@ namespace LibraryAndService.Managers
 
                     foreach (Guest guest in dbContext.Guest.Where(g => g.IsActive))
                     {
-                        Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}, Is Active: {guest.IsActive}");
+                        Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}, Is Active: {guest.IsActive}, Has Booked: {guest.Booked}");
                     }
                     Console.WriteLine();
                     Console.Write("Write the Guest Id of the Guest you want to Delete: ");
@@ -281,33 +297,54 @@ namespace LibraryAndService.Managers
         {
             using (var dbContext = new ApplicationDbContext(options.Options))
             {
-                Console.WriteLine("Recover a Guest.");
-                foreach (Guest guest in dbContext.Guest.Where(g => !g.IsActive))
+                bool isRunning = true;
+                do
                 {
-                    Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}");
-                }
-
-                Console.Write("Enter the Guest Id to recover: ");
-                string? intputValue = Console.ReadLine();
-                if (int.TryParse(intputValue, out int guestId))
-                {
-                    Guest? guestToRecover = dbContext.Guest.Find(guestId);
-
-                    if (guestToRecover != null && !guestToRecover.IsActive)
+                    Console.WriteLine("Recover a Guest.");
+                    foreach (Guest guest in dbContext.Guest.Where(g => !g.IsActive))
                     {
-                        guestToRecover.IsActive = true;
-                        dbContext.SaveChanges();
-                        Console.WriteLine($"Guest with Id {guestId} has been Recovered.");
+                        Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}");
+                    }
+
+                    Console.WriteLine();
+                    Console.Write("Enter the Guest Id to recover: ");
+
+                    if (int.TryParse(Console.ReadLine(), out int guestId))
+                    {
+                        Guest? guestToRecover = dbContext.Guest.Find(guestId);
+
+                        if (guestToRecover != null && !guestToRecover.IsActive)
+                        {
+                            guestToRecover.IsActive = true;
+                            dbContext.SaveChanges();
+
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine($"Guest with Id {guestId} has been Recovered.");
+                            Console.ResetColor();
+
+                            isRunning = false;
+
+                            Console.WriteLine();
+                            Console.WriteLine("Press any key to go back.");
+                            Console.ReadKey();
+                            Console.Clear();
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"Guest with Id {guestId} dose not exist or already active.");
+                            Console.ResetColor();
+                        }
                     }
                     else
                     {
-                        Console.WriteLine($"Guest with Id {guestId} dose not exist or already active.");
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid input. Please enter a valid Guest Id.");
+                        Console.ResetColor();
                     }
-                }
-                else
-                {
-                    Console.WriteLine("The Guest Id must be a number.");
-                }
+                } while (isRunning);
             }
         }
     }
