@@ -48,12 +48,12 @@ namespace LibraryAndService.Managers
 
                                 if (byte.TryParse(ageInput, out byte age))
                                 {
-                                    dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, age, false, true));
+                                    dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, age, true));
                                     dbContext.SaveChanges();
                                 }
                                 else
                                 {
-                                    dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, null, false, true));
+                                    dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, null, true));
                                     dbContext.SaveChanges();
                                 }
                             }
@@ -203,7 +203,6 @@ namespace LibraryAndService.Managers
                                             guestToUpdate.PhoneNumber = phoneNumberUpdate;
                                             guestToUpdate.Email = emailUpdate;
                                             guestToUpdate.Age = age;
-                                            guestToUpdate.Booked = false;
                                             guestToUpdate.IsActive = true;
                                             dbContext.SaveChanges();
                                         }
@@ -214,7 +213,6 @@ namespace LibraryAndService.Managers
                                             guestToUpdate.PhoneNumber = phoneNumberUpdate;
                                             guestToUpdate.Email = emailUpdate;
                                             guestToUpdate.Age = null;
-                                            guestToUpdate.Booked = false;
                                             guestToUpdate.IsActive = true;
                                             dbContext.SaveChanges();
                                         }
@@ -260,7 +258,7 @@ namespace LibraryAndService.Managers
 
                     foreach (Guest guest in dbContext.Guest.Where(g => g.IsActive))
                     {
-                        Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}, Is Active: {guest.IsActive}, Has Booked: {guest.Booked}");
+                        Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}, Is Active: {guest.IsActive}");
                     }
                     Console.WriteLine();
                     Console.Write("Write the Guest Id of the Guest you want to Delete: ");
@@ -271,19 +269,32 @@ namespace LibraryAndService.Managers
 
                         if (guestToDelete != null && guestToDelete.IsActive == true)
                         {
-                            guestToDelete.IsActive = false;
-                            dbContext.SaveChanges();
 
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"Successfully soft-deleted Guest with Id {guestId}.");
-                            Console.ResetColor();
+                            bool activeBooking = dbContext.Booking.Any(b => b.Guest.Id == guestId && b.IsActive);
 
-                            isRunning = false;
+                            if (!activeBooking)
+                            {
+                                guestToDelete.IsActive = false;
+                                dbContext.SaveChanges();
 
-                            Console.WriteLine();
-                            Console.WriteLine("Press any key to go back.");
-                            Console.ReadKey();
-                            Console.Clear();
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine($"Successfully soft-deleted Guest with Id {guestId}.");
+                                Console.ResetColor();
+
+                                isRunning = false;
+
+                                Console.WriteLine();
+                                Console.WriteLine("Press any key to go back.");
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Cannot delete Guest. They have active bookings.");
+                                Console.ResetColor();
+                            }
                         }
                         else
                         {
