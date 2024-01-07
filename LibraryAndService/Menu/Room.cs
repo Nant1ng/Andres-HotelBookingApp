@@ -64,12 +64,14 @@ namespace LibraryAndService.Menu
                     case '5':
                         roomManager.Delete(options);
                         break;
+
                     case '6':
                         roomManager.Recover(options);
                         break;
-                    //case '7':
-                    //  roomManager.HardDelete(options);
-                    //break;
+
+                    case '7':
+                        roomManager.HardDelete(options);
+                        break;
 
                     case '0':
                         isRunning = false;
