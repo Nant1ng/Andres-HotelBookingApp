@@ -6,7 +6,7 @@ using LibraryAndService.Interface;
 
 namespace LibraryAndService.Managers
 {
-    public class RoomManager : IEntityManager, IHardDelete
+    public class RoomManager : IEntityManager, IRecover, IHardDelete
     {
         public void Create(DbContextOptionsBuilder<ApplicationDbContext> options)
         {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryAndService.Managers
 {
-    public class GuestManager : IEntityManager
+    public class GuestManager : IEntityManager, IRecover
     {
         public void Create(DbContextOptionsBuilder<ApplicationDbContext> options)
         {
@@ -94,8 +94,14 @@ namespace LibraryAndService.Managers
 
                         if (foundGuest != null)
                         {
+                            Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine("Guest found Successfully.");
+                            Console.ResetColor();
                             Console.WriteLine($"Id: {foundGuest.Id}, Full Name: {foundGuest.FirstName} {foundGuest.LastName}, Phone Number: {foundGuest.PhoneNumber}");
+                            Console.WriteLine();
+                            Console.WriteLine("Press any key to go back.");
+                            Console.ReadKey();
+                            Console.Clear();
                         }
                         else
                         {
@@ -140,6 +146,8 @@ namespace LibraryAndService.Managers
                     Console.WriteLine("║-----------------------------------------------------------------║");
                 }
                 Console.WriteLine("╚═════════════════════════════════════════════════════════════════════╝");
+                Console.WriteLine();
+                Console.WriteLine("Press any key to go back.");
                 Console.ReadKey();
                 Console.Clear();
             }
@@ -227,6 +235,7 @@ namespace LibraryAndService.Managers
                             Console.Clear();
                             Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine($"No Guest found with Id {guestId}.");
+                            Console.ResetColor();
                         }
                     }
                     else
@@ -234,6 +243,7 @@ namespace LibraryAndService.Managers
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Invalid input. Please enter a valid Guest Id.");
+                        Console.ResetColor();
                     }
                 }
             }

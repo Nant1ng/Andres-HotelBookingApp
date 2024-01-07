@@ -10,6 +10,5 @@ namespace LibraryAndService.Interface
         void GetAll(DbContextOptionsBuilder<ApplicationDbContext> options);
         void Update(DbContextOptionsBuilder<ApplicationDbContext> options);
         void Delete(DbContextOptionsBuilder<ApplicationDbContext> options);
-        void Recover(DbContextOptionsBuilder<ApplicationDbContext> options);
     }
 }
