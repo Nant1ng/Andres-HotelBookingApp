@@ -1,0 +1,15 @@
+﻿																	Database Normalization. 
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| När jag arbetade med att normalisera min databas, så började jag med att kolla att mina tabell följer första normalformen (1NF).									   |
+| Detta innebar att jag först, kollad att alla tabeller hade sina egna unika primärnycklar,vilket gör det lättare att identifiera vilken tabell man pratar om/med.	   |
+| Sedan kollade jag i cellarna i varje tabell för att vara säker att de bara innehöll ett värde och att inga datatyper var blandade,								   |
+| vilket är väldigt viktigt för att undvika komplexitet samt för att man själv ska veta vad det är man hämtar från databasen.										   |
+|																																									   |
+| Sedan kollade jag så att mina tabeller förljer den andra normalformen (2NF), igenom att se ifall det finns någon partiella beronende i tabellerna.				   |
+| Det fanns inga partiell beronenden eftersom jag har delat upp mina tabeller till mindre tabeller där det bara finns relevant information om de.					   |
+|																																									   |
+| Slutligen kollade jag så att tabellerna följer den tredje normalformen (3NF), vilket de gör eftersom alla mina tabeller har var sin unika primärnyckel,			   |
+| samt så har min boknings tabell (spindel i nättet) alla främande nycklar som då gör att man kan hämta information om de olika tabellerna via den.					   |
+|																																									   |
+| Eftersom jag upprätthåller datanormalisering 1, 2 och 3NF så säkerställer jag en ren, effektiv och funktionell databasdesign.										   |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
