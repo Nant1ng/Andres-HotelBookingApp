@@ -18,7 +18,7 @@ namespace LibraryAndService.Menu
                                         ██║██╔██╗ ██║██║   ██║██║   ██║██║██║     █████╗  
                                         ██║██║╚██╗██║╚██╗ ██╔╝██║   ██║██║██║     ██╔══╝  
                                         ██║██║ ╚████║ ╚████╔╝ ╚██████╔╝██║╚██████╗███████╗
-                                        <╚═╝╚═╝  ╚═══╝  ╚═══╝   ╚═════╝ ╚═╝ ╚═════╝╚══════╝
+                                        ╚═╝╚═╝  ╚═══╝  ╚═══╝   ╚═════╝ ╚═╝ ╚═════╝╚══════╝
                                                   
                                                         
                                                     [1] Get all Invoices
@@ -48,7 +48,10 @@ namespace LibraryAndService.Menu
                         break;
 
                     default:
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Invalid selection. Please choose a valid option.");
+                        Console.ResetColor();
                         break;
                 }
             } while (isRunning);
