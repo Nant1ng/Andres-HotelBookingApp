@@ -1,4 +1,5 @@
-﻿using LibraryAndService.Data;
+﻿using LibraryAndService;
+using LibraryAndService.Data;
 using LibraryAndService.Menu;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,7 @@ namespace HotelBooking
                 dataPopulator.MigrateAndPopulate(dbContext);
             }
 
+            UpdateBookingAndInvoiceStatus.CheckInvoiceDeadline(options);
 
             do
             {
