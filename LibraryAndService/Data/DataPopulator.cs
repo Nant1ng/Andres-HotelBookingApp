@@ -49,10 +49,10 @@ namespace LibraryAndService.Data
 
         private void PopulateBookingAndInvoice(ApplicationDbContext dbContext)
         {
-            DateOnly checkInDate = new DateOnly(2024, 02, 01);
-            DateOnly checkOutDate = new DateOnly(2024, 02, 04);
+            DateOnly checkInDate = new DateOnly(2024, 01, 01);
+            DateOnly checkOutDate = new DateOnly(2024, 01, 03);
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-            DateOnly deadline = today.AddDays(10);
+            DateOnly deadline = today.AddDays(-11);
             Guest? guest = dbContext.Guest.Find(1);
             Room? room = dbContext.Room.Find(1);
 
