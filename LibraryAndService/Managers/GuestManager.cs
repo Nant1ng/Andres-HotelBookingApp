@@ -11,112 +11,173 @@ namespace LibraryAndService.Managers
         {
             using (var dbContext = new ApplicationDbContext(options.Options))
             {
-                Console.WriteLine("Create a Guest.");
-                Console.WriteLine();
-                Console.Write("First Name: ");
-                string? firstNameInput = Console.ReadLine();
-
-                if (!string.IsNullOrWhiteSpace(firstNameInput))
+                bool isRunning = true;
+                do
                 {
-                    string firstName = firstNameInput;
+                    Console.WriteLine("Create a Guest.");
+                    Console.WriteLine();
+                    Console.Write("First Name: ");
+                    string? firstNameInput = Console.ReadLine();
 
-                    Console.Write("Last Name: ");
-                    string? lastNameInput = Console.ReadLine();
-
-                    if (!string.IsNullOrWhiteSpace(lastNameInput))
+                    if (!string.IsNullOrWhiteSpace(firstNameInput))
                     {
-                        string lastName = lastNameInput;
+                        string firstName = firstNameInput;
 
-                        Console.WriteLine("Phone Number can only contain number and whitespace.");
-                        Console.Write("Phone Number: ");
-                        string? phoneNumberInput = Console.ReadLine();
+                        Console.Write("Last Name: ");
+                        string? lastNameInput = Console.ReadLine();
 
-                        if (!string.IsNullOrEmpty(phoneNumberInput) && phoneNumberInput.All(c => char.IsDigit(c) || char.IsWhiteSpace(c)))
+                        if (!string.IsNullOrWhiteSpace(lastNameInput))
                         {
-                            string phoneNumber = phoneNumberInput;
+                            string lastName = lastNameInput;
 
-                            Console.Write("Email: ");
-                            string? emailInput = Console.ReadLine();
+                            Console.WriteLine("Phone Number can only contain number and whitespace.");
+                            Console.Write("Phone Number: ");
+                            string? phoneNumberInput = Console.ReadLine();
 
-                            if (!string.IsNullOrWhiteSpace(emailInput))
+                            if (!string.IsNullOrEmpty(phoneNumberInput) && phoneNumberInput.All(c => char.IsDigit(c) || char.IsWhiteSpace(c)))
                             {
-                                string email = emailInput;
+                                string phoneNumber = phoneNumberInput;
 
-                                Console.WriteLine("Age can be left blank.");
-                                Console.Write("Age: ");
-                                string? ageInput = Console.ReadLine();
+                                Console.Write("Email: ");
+                                string? emailInput = Console.ReadLine();
 
-                                if (byte.TryParse(ageInput, out byte age))
+                                if (!string.IsNullOrWhiteSpace(emailInput))
                                 {
-                                    dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, age, true));
-                                    dbContext.SaveChanges();
+                                    string email = emailInput;
+
+                                    Console.WriteLine("Age can be left blank.");
+                                    Console.Write("Age: ");
+                                    string? ageInput = Console.ReadLine();
+
+                                    if (byte.TryParse(ageInput, out byte age))
+                                    {
+                                        dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, age, true));
+                                        dbContext.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, null, true));
+                                        dbContext.SaveChanges();
+                                    }
+
+                                    Console.ForegroundColor = ConsoleColor.Green;
+                                    Console.WriteLine("Guest was Successfully Created.");
+                                    Console.ResetColor();
+
+                                    isRunning = false;
+
+                                    Console.WriteLine();
+                                    Console.WriteLine("Press any key to go back.");
+                                    Console.ReadKey();
+                                    Console.Clear();
+
                                 }
                                 else
                                 {
-                                    dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, null, true));
-                                    dbContext.SaveChanges();
+                                    Console.Clear();
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("Invalid input. Email cannot be blank.");
+                                    Console.ResetColor();
                                 }
                             }
+                            else
+                            {
+                                Console.Clear();
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Invalid input. Phone Number must contain only numbers and whitespace.");
+                                Console.ResetColor();
+                            }
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Invalid input. Last Name cannot be blank.");
+                            Console.ResetColor();
                         }
                     }
-                }
+                    else
+                    {
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid input. First Name cannot be blank.");
+                        Console.ResetColor();
+                    }
+
+                } while (isRunning);
             }
         }
         public void GetOne(DbContextOptionsBuilder<ApplicationDbContext> options)
         {
             using (var dbContext = new ApplicationDbContext(options.Options))
             {
-                Console.WriteLine("Get a Guest.");
-
-                foreach (Guest guest in dbContext.Guest)
+                bool isRunning = true;
+                do
                 {
-                    Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}");
-                }
-                Console.WriteLine();
+                    Console.WriteLine("Get a Guest.");
 
-                Console.WriteLine("Search for a Guest by writing their First Name and the four last digits of their Phone Number");
-                Console.WriteLine("Separate the First Name and numbers with ,");
-                Console.Write("First Name and 4 digits: ");
-
-                string? input = Console.ReadLine();
-
-                if (!string.IsNullOrEmpty(input))
-                {
-                    string[] inputParts = input.Split(',');
-
-                    if (inputParts.Length == 2)
+                    foreach (Guest guest in dbContext.Guest)
                     {
-                        string firstName = inputParts[0].Trim();
-                        string lastFourDigits = inputParts[1].Trim();
+                        Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}");
+                    }
+                    Console.WriteLine();
 
-                        Guest? foundGuest = dbContext.Guest
-                            .FirstOrDefault(g => g.FirstName == firstName && g.PhoneNumber.EndsWith(lastFourDigits));
+                    Console.WriteLine("Search for a Guest by writing their First Name and the four last digits of their Phone Number");
+                    Console.WriteLine("Separate the First Name and numbers with ,");
+                    Console.Write("First Name and 4 digits: ");
 
-                        if (foundGuest != null)
+                    string? input = Console.ReadLine();
+
+                    if (!string.IsNullOrEmpty(input))
+                    {
+                        string[] inputParts = input.Split(',');
+
+                        if (inputParts.Length == 2)
                         {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("Guest found Successfully.");
-                            Console.ResetColor();
-                            Console.WriteLine($"Id: {foundGuest.Id}, Full Name: {foundGuest.FirstName} {foundGuest.LastName}, Phone Number: {foundGuest.PhoneNumber}");
-                            Console.WriteLine();
-                            Console.WriteLine("Press any key to go back.");
-                            Console.ReadKey();
-                            Console.Clear();
+                            string firstName = inputParts[0].Trim();
+                            string lastFourDigits = inputParts[1].Trim();
+
+                            Guest? foundGuest = dbContext.Guest
+                                .FirstOrDefault(g => g.FirstName == firstName && g.PhoneNumber.EndsWith(lastFourDigits));
+
+                            if (foundGuest != null)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Guest found Successfully.");
+                                Console.ResetColor();
+                                Console.WriteLine($"Id: {foundGuest.Id}, Full Name: {foundGuest.FirstName} {foundGuest.LastName}, Phone Number: {foundGuest.PhoneNumber}");
+
+                                isRunning = false;
+
+                                Console.WriteLine();
+                                Console.WriteLine("Press any key to go back.");
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("No matching guest found.");
+                                Console.ResetColor();
+                            }
                         }
                         else
                         {
-                            Console.WriteLine("No matching guest found.");
+                            Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Invalid input format. Please separate First Name and 4 digits with a comma.");
+                            Console.ResetColor();
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Invalid input format. Please separate First Name and 4 digits with a comma.");
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Input cannot be empty.");
+                        Console.ResetColor();
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Input cannot be empty.");
-                }
+                } while (isRunning);
             }
         }
         public void GetAll(DbContextOptionsBuilder<ApplicationDbContext> options)
@@ -156,76 +217,111 @@ namespace LibraryAndService.Managers
         {
             using (var dbContext = new ApplicationDbContext(options.Options))
             {
-                Console.WriteLine("Update a Guest.");
-
-                foreach (Guest guest in dbContext.Guest)
+                bool isRunning = true;
+                do
                 {
-                    Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}");
-                }
-                Console.WriteLine();
+                    Console.WriteLine("Update a Guest.");
 
-                Console.Write("Write the Id of the Guest you want to update: ");
-                if (int.TryParse(Console.ReadLine(), out int guestId))
-                {
-                    Guest? guestToUpdate = dbContext.Guest.Find(guestId);
-
-                    if (guestToUpdate != null)
+                    foreach (Guest guest in dbContext.Guest)
                     {
-                        Console.WriteLine("First Name: ");
-                        string? firstNameUpdate = Console.ReadLine();
+                        Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}");
+                    }
+                    Console.WriteLine();
 
-                        if (!string.IsNullOrWhiteSpace(firstNameUpdate))
+                    Console.Write("Write the Id of the Guest you want to update: ");
+                    if (int.TryParse(Console.ReadLine(), out int guestId))
+                    {
+                        Guest? guestToUpdate = dbContext.Guest.Find(guestId);
+
+                        if (guestToUpdate != null)
                         {
-                            Console.WriteLine("Last Name: ");
-                            string? lastNameUpdate = Console.ReadLine();
+                            Console.Write("First Name: ");
+                            string? firstNameUpdate = Console.ReadLine();
 
-                            if (!string.IsNullOrWhiteSpace(lastNameUpdate))
+                            if (!string.IsNullOrWhiteSpace(firstNameUpdate))
                             {
-                                Console.WriteLine("Phone Number can only contain number and whitespace.");
-                                Console.Write("Phone Number: ");
-                                string? phoneNumberUpdate = Console.ReadLine();
+                                Console.Write("Last Name: ");
+                                string? lastNameUpdate = Console.ReadLine();
 
-                                if (!string.IsNullOrEmpty(phoneNumberUpdate) && phoneNumberUpdate.All(c => char.IsDigit(c) || char.IsWhiteSpace(c)))
+                                if (!string.IsNullOrWhiteSpace(lastNameUpdate))
                                 {
-                                    Console.Write("Email: ");
-                                    string? emailUpdate = Console.ReadLine();
+                                    Console.WriteLine("Phone Number can only contain numbers and whitespace.");
+                                    Console.Write("Phone Number: ");
+                                    string? phoneNumberUpdate = Console.ReadLine();
 
-                                    if (!string.IsNullOrWhiteSpace(emailUpdate))
+                                    if (!string.IsNullOrEmpty(phoneNumberUpdate) && phoneNumberUpdate.All(c => char.IsDigit(c) || char.IsWhiteSpace(c)))
                                     {
-                                        Console.WriteLine("Age can be left blank.");
-                                        Console.Write("Age: ");
-                                        string? ageUpdate = Console.ReadLine();
+                                        Console.Write("Email: ");
+                                        string? emailUpdate = Console.ReadLine();
 
-                                        if (byte.TryParse(ageUpdate, out byte age))
+                                        if (!string.IsNullOrWhiteSpace(emailUpdate))
                                         {
-                                            guestToUpdate.FirstName = firstNameUpdate;
-                                            guestToUpdate.LastName = lastNameUpdate;
-                                            guestToUpdate.PhoneNumber = phoneNumberUpdate;
-                                            guestToUpdate.Email = emailUpdate;
-                                            guestToUpdate.Age = age;
-                                            guestToUpdate.IsActive = true;
-                                            dbContext.SaveChanges();
+                                            Console.WriteLine("Age can be left blank.");
+                                            Console.Write("Age: ");
+                                            string? ageUpdate = Console.ReadLine();
+
+                                            if (byte.TryParse(ageUpdate, out byte age))
+                                            {
+                                                guestToUpdate.FirstName = firstNameUpdate;
+                                                guestToUpdate.LastName = lastNameUpdate;
+                                                guestToUpdate.PhoneNumber = phoneNumberUpdate;
+                                                guestToUpdate.Email = emailUpdate;
+                                                guestToUpdate.Age = age;
+                                                guestToUpdate.IsActive = true;
+                                                dbContext.SaveChanges();
+                                            }
+                                            else
+                                            {
+                                                guestToUpdate.FirstName = firstNameUpdate;
+                                                guestToUpdate.LastName = lastNameUpdate;
+                                                guestToUpdate.PhoneNumber = phoneNumberUpdate;
+                                                guestToUpdate.Email = emailUpdate;
+                                                guestToUpdate.Age = null;
+                                                guestToUpdate.IsActive = true;
+                                                dbContext.SaveChanges();
+                                            }
+
+                                            Console.ForegroundColor = ConsoleColor.Green;
+                                            Console.WriteLine($"Guest with Id {guestId} has been updated.");
+                                            Console.ResetColor();
+
+                                            isRunning = false;
+
+                                            Console.WriteLine();
+                                            Console.WriteLine("Press any key to go back.");
+                                            Console.ReadKey();
+                                            Console.Clear();
                                         }
                                         else
                                         {
-                                            guestToUpdate.FirstName = firstNameUpdate;
-                                            guestToUpdate.LastName = lastNameUpdate;
-                                            guestToUpdate.PhoneNumber = phoneNumberUpdate;
-                                            guestToUpdate.Email = emailUpdate;
-                                            guestToUpdate.Age = null;
-                                            guestToUpdate.IsActive = true;
-                                            dbContext.SaveChanges();
+                                            Console.Clear();
+                                            Console.ForegroundColor = ConsoleColor.Red;
+                                            Console.WriteLine("Invalid input. Email cannot be blank.");
+                                            Console.ResetColor();
                                         }
-                                        Console.ForegroundColor = ConsoleColor.Green;
-                                        Console.WriteLine($"Guest with Id {guestId} has been update.");
-                                        Console.ResetColor();
-
-                                        Console.WriteLine();
-                                        Console.WriteLine("Press any key to go back.");
-                                        Console.ReadKey();
+                                    }
+                                    else
+                                    {
                                         Console.Clear();
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("Invalid input. Phone Number must contain only numbers and whitespace.");
+                                        Console.ResetColor();
                                     }
                                 }
+                                else
+                                {
+                                    Console.Clear();
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("Invalid input. Last Name cannot be blank.");
+                                    Console.ResetColor();
+                                }
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Invalid input. First Name cannot be blank.");
+                                Console.ResetColor();
                             }
                         }
                         else
@@ -243,9 +339,8 @@ namespace LibraryAndService.Managers
                         Console.WriteLine("Invalid input. Please enter a valid Guest Id.");
                         Console.ResetColor();
                     }
-                }
+                } while (isRunning);
             }
-
         }
         public void Delete(DbContextOptionsBuilder<ApplicationDbContext> options)
         {

@@ -37,7 +37,8 @@ namespace LibraryAndService.Managers
                 {
                     Console.WriteLine("Invoice got Payed");
 
-                    foreach (Invoice invoice in dbContext.Invoice.Where(i => !i.IsPayed))
+                    foreach (Invoice invoice in dbContext.Invoice
+                        .Where(i => !i.IsPayed && i.IsActive == true))
                     {
                         Console.WriteLine($"Invoice Id: {invoice.Id}, Total: {invoice.Total}, Deadline: {invoice.Deadline}, Payed: {invoice.IsPayed}, Active: {invoice.IsActive}");
                     }
@@ -48,7 +49,7 @@ namespace LibraryAndService.Managers
                     {
                         Invoice? payedInvoice = dbContext.Invoice.Find(invoiceId);
 
-                        if (payedInvoice != null && payedInvoice.IsPayed == false)
+                        if (payedInvoice != null && payedInvoice.IsPayed == false && payedInvoice.IsActive == true)
                         {
                             payedInvoice.IsPayed = true;
                             dbContext.SaveChanges();
@@ -68,7 +69,7 @@ namespace LibraryAndService.Managers
                         {
                             Console.Clear();
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine($"No Invoice found with Id {invoiceId}.");
+                            Console.WriteLine($"No Invoice found with Id {invoiceId} or it's Not Active.");
                             Console.ResetColor();
                         }
                     }

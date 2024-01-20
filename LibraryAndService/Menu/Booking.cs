@@ -1,8 +1,12 @@
-﻿namespace LibraryAndService.Menu
+﻿using LibraryAndService.Data;
+using LibraryAndService.Managers;
+using Microsoft.EntityFrameworkCore;
+
+namespace LibraryAndService.Menu
 {
     public class Booking
     {
-        public void Menu()
+        public void Menu(DbContextOptionsBuilder<ApplicationDbContext> options)
         {
             bool isRunning = true;
 
@@ -32,26 +36,28 @@
                 char key = Console.ReadKey().KeyChar;
                 Console.Clear();
 
+                BookingManager bookingManager = new BookingManager();
+
                 switch (key)
                 {
                     case '1':
-                        Console.WriteLine("You pressed 1 - Booking");
+                        bookingManager.Create(options);
                         break;
 
                     case '2':
-                        Console.WriteLine("You pressed 2 - Guest");
+                        bookingManager.GetAll(options);
                         break;
 
                     case '3':
-                        Console.WriteLine("You pressed 3 - Room");
+                        bookingManager.GetOne(options);
                         break;
 
                     case '4':
-                        Console.WriteLine("You pressed 3 - Room");
+                        bookingManager.Update(options);
                         break;
 
                     case '5':
-                        Console.WriteLine("You pressed 3 - Room");
+                        bookingManager.Delete(options);
                         break;
 
                     case '0':
