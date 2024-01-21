@@ -16,59 +16,78 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Create a Room.");
+                    Console.WriteLine("Write exit if you want to go back.");
                     Console.WriteLine();
 
                     Console.Write("Room Name: ");
                     string? roomName = Console.ReadLine();
 
-                    if (!string.IsNullOrWhiteSpace(roomName))
+                    if (!string.IsNullOrWhiteSpace(roomName) && !string.Equals(roomName, "exit", StringComparison.OrdinalIgnoreCase))
                     {
                         Console.Write("Price: ");
-                        if (decimal.TryParse(Console.ReadLine(), out decimal price) && price > 0)
+                        string? priceInput = Console.ReadLine();
+
+                        if (decimal.TryParse(priceInput, out decimal price) && price > 0)
                         {
                             Console.WriteLine("Select Room Type: ");
+
+                            int number = 0;
+
                             foreach (RoomType type in Enum.GetValues(typeof(RoomType)))
+                                Console.WriteLine($"{++number} - {type}");
+
+                            char? userInput = Console.ReadKey().KeyChar;
+
+                            RoomType roomType;
+
+                            switch (userInput)
                             {
-                                Console.WriteLine($"- {type}");
-                            }
-
-                            Console.Write("Room Type: ");
-                            if (Enum.TryParse(Console.ReadLine(), out RoomType roomType))
-                            {
-                                Console.Write("Room Size (in sq. meters): ");
-                                if (byte.TryParse(Console.ReadLine(), out byte roomSize) && roomSize >= 10 && roomSize <= 100)
-                                {
-                                    Room newRoom = new Room(roomName, price, roomType, roomSize, true);
-                                    dbContext.Room.Add(newRoom);
-                                    dbContext.SaveChanges();
-
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.WriteLine("Room was Successfully Updated.");
-                                    Console.ResetColor();
-
-                                    isRunning = false;
-
-                                    Console.WriteLine();
-                                    Console.WriteLine("Press any key to go back.");
-                                    Console.ReadKey();
-                                    Console.Clear();
-                                }
-                                else
-                                {
+                                case '1':
+                                    roomType = RoomType.SingleRoom;
+                                    break;
+                                case '2':
+                                    roomType = RoomType.DoubleRoom;
+                                    break;
+                                default:
                                     Console.Clear();
                                     Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine("Invalid input for Room Size.");
-                                    Console.WriteLine("Room Size must be more or equal 10 and less or equal 100.");
+                                    Console.WriteLine("Invalid input for Room Type.");
                                     Console.ResetColor();
-                                }
+                                    continue;
+                            }
+
+                            Console.WriteLine();
+                            Console.Write("Room Size (in sq. meters): ");
+                            if (byte.TryParse(Console.ReadLine(), out byte roomSize) && roomSize >= 10 && roomSize <= 100)
+                            {
+                                Room newRoom = new Room(roomName, price, roomType, roomSize, true);
+                                dbContext.Room.Add(newRoom);
+                                dbContext.SaveChanges();
+
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Ro3om was Successfully Updated.");
+                                Console.ResetColor();
+
+                                isRunning = false;
+
+                                Console.WriteLine();
+                                Console.WriteLine("Press any key to go back.");
+                                Console.ReadKey();
+                                Console.Clear();
                             }
                             else
                             {
                                 Console.Clear();
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Invalid input for Room Type.");
+                                Console.WriteLine("Invalid input for Room Size.");
+                                Console.WriteLine("Room Size must be more or equal 10 and less or equal 100.");
                                 Console.ResetColor();
                             }
+                        }
+                        else if (string.Equals(priceInput, "exit", StringComparison.OrdinalIgnoreCase))
+                        {
+                            isRunning = false;
+                            Console.Clear();
                         }
                         else
                         {
@@ -78,6 +97,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine("Price can't be less than 1.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(roomName, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
@@ -97,6 +121,8 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Get a Room.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
 
                     foreach (Room room in dbContext.Room)
                     {
@@ -105,7 +131,9 @@ namespace LibraryAndService.Managers
                     Console.WriteLine();
 
                     Console.Write("Enter a Room Id: ");
-                    if (int.TryParse(Console.ReadLine(), out int roomId))
+                    string? userInput = Console.ReadLine();
+
+                    if (int.TryParse(userInput, out int roomId))
                     {
                         Room? room = dbContext.Room.FirstOrDefault(r => r.Id == roomId);
 
@@ -131,6 +159,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine($"No Room found with Id {roomId}.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
@@ -173,6 +206,7 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Update a Room.");
+                    Console.WriteLine("Write exit if you want to go back.");
                     Console.WriteLine();
 
                     foreach (Room room in dbContext.Room)
@@ -182,7 +216,8 @@ namespace LibraryAndService.Managers
 
                     Console.WriteLine();
                     Console.Write("Enter the Id of the Room to update: ");
-                    if (int.TryParse(Console.ReadLine(), out int roomId))
+                    string? userInput = Console.ReadLine();
+                    if (int.TryParse(userInput, out int roomId))
                     {
                         Room? roomToUpdate = dbContext.Room.FirstOrDefault(r => r.Id == roomId);
 
@@ -191,55 +226,78 @@ namespace LibraryAndService.Managers
                             Console.Write("New Room Name: ");
                             string? roomNameUpdate = Console.ReadLine();
 
-                            if (!string.IsNullOrWhiteSpace(roomNameUpdate))
+                            if (!string.IsNullOrWhiteSpace(roomNameUpdate) && !string.Equals(roomNameUpdate, "exit", StringComparison.OrdinalIgnoreCase))
                             {
                                 Console.Write("New Price: ");
-                                if (decimal.TryParse(Console.ReadLine(), out decimal priceUpdate) && priceUpdate > 0)
+                                string? priceInput = Console.ReadLine();
+                                if (decimal.TryParse(priceInput, out decimal priceUpdate) && priceUpdate > 0)
                                 {
-                                    Console.WriteLine("Select New Room Type");
+                                    Console.WriteLine("Select Room Type: ");
+
+                                    int number = 0;
+
                                     foreach (RoomType type in Enum.GetValues(typeof(RoomType)))
+                                        Console.WriteLine($"{++number} - {type}");
+
+                                    char? roomTypeInput = Console.ReadKey().KeyChar;
+
+                                    RoomType roomTypeUpdate;
+
+                                    switch (roomTypeInput)
                                     {
-                                        Console.WriteLine($"- {type}");
-                                    }
-
-                                    if (Enum.TryParse(Console.ReadLine(), out RoomType roomTypeUpdate))
-                                    {
-                                        Console.Write("New Room Size  (in sq. meters): ");
-                                        if (byte.TryParse(Console.ReadLine(), out byte roomSizeUpdate) && roomSizeUpdate >= 10 && roomSizeUpdate <= 100)
-                                        {
-                                            roomToUpdate.RoomName = roomNameUpdate;
-                                            roomToUpdate.Price = priceUpdate;
-                                            roomToUpdate.RoomType = roomTypeUpdate;
-                                            roomToUpdate.RoomSize = roomSizeUpdate;
-
-                                            dbContext.SaveChanges();
-                                            Console.ForegroundColor = ConsoleColor.Green;
-                                            Console.WriteLine($"Room with Id {roomId} has been updated.");
-                                            Console.ResetColor();
-
-                                            isRunning = false;
-
-                                            Console.WriteLine();
-                                            Console.WriteLine("Press any key to go back.");
-                                            Console.ReadKey();
-                                            Console.Clear();
-                                        }
-                                        else
-                                        {
+                                        case '1':
+                                            roomTypeUpdate = RoomType.SingleRoom;
+                                            break;
+                                        case '2':
+                                            roomTypeUpdate = RoomType.DoubleRoom;
+                                            break;
+                                        default:
                                             Console.Clear();
                                             Console.ForegroundColor = ConsoleColor.Red;
-                                            Console.WriteLine("Invalid input for Room Size.");
-                                            Console.WriteLine("Room Size must be more or equal 10 and less or equal 100.");
+                                            Console.WriteLine("Invalid input for Room Type.");
                                             Console.ResetColor();
-                                        }
+                                            continue;
+                                    }
+                                    Console.Write("New Room Size  (in sq. meters): ");
+                                    string? roomSizeInput = Console.ReadLine();
+
+                                    if (byte.TryParse(roomSizeInput, out byte roomSizeUpdate) && roomSizeUpdate >= 10 && roomSizeUpdate <= 100)
+                                    {
+                                        roomToUpdate.RoomName = roomNameUpdate;
+                                        roomToUpdate.Price = priceUpdate;
+                                        roomToUpdate.RoomType = roomTypeUpdate;
+                                        roomToUpdate.RoomSize = roomSizeUpdate;
+
+                                        dbContext.SaveChanges();
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.WriteLine($"Room with Id {roomId} has been updated.");
+                                        Console.ResetColor();
+
+                                        isRunning = false;
+
+                                        Console.WriteLine();
+                                        Console.WriteLine("Press any key to go back.");
+                                        Console.ReadKey();
+                                        Console.Clear();
+                                    }
+                                    else if (string.Equals(roomSizeInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        isRunning = false;
+                                        Console.Clear();
                                     }
                                     else
                                     {
                                         Console.Clear();
                                         Console.ForegroundColor = ConsoleColor.Red;
-                                        Console.WriteLine("Invalid input for Room Type.");
+                                        Console.WriteLine("Invalid input for Room Size.");
+                                        Console.WriteLine("Room Size must be more or equal 10 and less or equal 100.");
                                         Console.ResetColor();
                                     }
+                                }
+                                else if (string.Equals(priceInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    isRunning = false;
+                                    Console.Clear();
                                 }
                                 else
                                 {
@@ -249,6 +307,11 @@ namespace LibraryAndService.Managers
                                     Console.WriteLine("Price can't be less than 1.");
                                     Console.ResetColor();
                                 }
+                            }
+                            else if (string.Equals(roomNameUpdate, "exit", StringComparison.OrdinalIgnoreCase))
+                            {
+                                isRunning = false;
+                                Console.Clear();
                             }
                             else
                             {
@@ -265,6 +328,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine($"Room with Id {roomId} not found.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
@@ -284,34 +352,59 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Delete a Room.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
 
-                    foreach (Room room in dbContext.Room.Where(r => r.IsActive))
+                    var bookedRoomIds = dbContext.Booking
+                             .Where(b => b.IsActive)
+                             .Select(b => b.Room.Id)
+                             .Distinct()
+                             .ToList();
+
+                    var availableRooms = dbContext.Room
+                                                  .Where(r => !bookedRoomIds.Contains(r.Id) && r.IsActive)
+                                                  .ToList();
+
+                    foreach (var room in availableRooms)
                     {
                         Console.WriteLine($"Id: {room.Id}, Room Name: {room.RoomName}, Room Type: {room.RoomType}, Active: {room.IsActive}");
                     }
 
                     Console.WriteLine();
                     Console.Write("Write the Room Id of the Room you want to Delete: ");
+                    string? userInput = Console.ReadLine();
 
-                    if (int.TryParse(Console.ReadLine(), out int roomId))
+                    if (int.TryParse(userInput, out int roomId))
                     {
                         Room? roomToDelete = dbContext.Room.Find(roomId);
 
                         if (roomToDelete != null && roomToDelete.IsActive == true)
                         {
-                            roomToDelete.IsActive = false;
-                            dbContext.SaveChanges();
+                            bool isRoomBooked = dbContext.Booking.Any(b => b.Room.Id == roomId && b.IsActive);
 
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"Successfully soft-deleted Room with Id {roomId}.");
-                            Console.ResetColor();
+                            if (!isRoomBooked)
+                            {
+                                roomToDelete.IsActive = false;
+                                dbContext.SaveChanges();
 
-                            isRunning = false;
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine($"Successfully soft-deleted Room with Id {roomId}.");
+                                Console.ResetColor();
 
-                            Console.WriteLine();
-                            Console.WriteLine("Press any key to go back.");
-                            Console.ReadKey();
-                            Console.Clear();
+                                isRunning = false;
+
+                                Console.WriteLine();
+                                Console.WriteLine("Press any key to go back.");
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Cannot delete the room. It is currently booked.");
+                                Console.ResetColor();
+                            }
                         }
                         else
                         {
@@ -320,6 +413,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine($"No Active Room found with Id {roomId}.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
@@ -339,6 +437,8 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Recover a Room.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
 
                     foreach (Room room in dbContext.Room.Where(r => !r.IsActive))
                     {
@@ -347,8 +447,9 @@ namespace LibraryAndService.Managers
 
                     Console.WriteLine();
                     Console.Write("Enter the Room Id to recover: ");
+                    string? userInput = Console.ReadLine();
 
-                    if (int.TryParse(Console.ReadLine(), out int roomId))
+                    if (int.TryParse(userInput, out int roomId))
                     {
                         Room? roomToRecover = dbContext.Room.Find(roomId);
 
@@ -376,6 +477,11 @@ namespace LibraryAndService.Managers
                             Console.ResetColor();
                         }
                     }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
+                    }
                     else
                     {
                         Console.Clear();
@@ -394,13 +500,15 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Hard Delete a Room.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
                     Console.WriteLine();
                     Console.WriteLine("Are you sure you want to HARD Delete a Room? (You can only Hard Delete a room thats not Active.)");
                     Console.Write("yes/no: ");
 
                     string? inputValue = Console.ReadLine();
 
-                    if (inputValue != null)
+                    if (inputValue != null && !string.Equals(inputValue, "exit", StringComparison.OrdinalIgnoreCase))
                     {
                         string yesOrNo = inputValue.ToLower();
 
@@ -470,6 +578,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine("Invalid input. Please enter yes or no.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(inputValue, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {

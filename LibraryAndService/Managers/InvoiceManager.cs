@@ -35,7 +35,9 @@ namespace LibraryAndService.Managers
                 bool isRunning = true;
                 do
                 {
-                    Console.WriteLine("Invoice got Payed");
+                    Console.WriteLine("Invoice got Payed.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
 
                     foreach (Invoice invoice in dbContext.Invoice
                         .Where(i => !i.IsPayed && i.IsActive == true))
@@ -45,7 +47,9 @@ namespace LibraryAndService.Managers
                     Console.WriteLine();
                     Console.Write("Write the Id of the Invoice got Payed: ");
 
-                    if (int.TryParse(Console.ReadLine(), out int invoiceId))
+                    string? userInput = Console.ReadLine();
+
+                    if (int.TryParse(userInput, out int invoiceId))
                     {
                         Invoice? payedInvoice = dbContext.Invoice.Find(invoiceId);
 
@@ -72,6 +76,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine($"No Invoice found with Id {invoiceId} or it's Not Active.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {

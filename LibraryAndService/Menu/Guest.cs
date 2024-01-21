@@ -63,7 +63,7 @@ namespace LibraryAndService.Menu
                         break;
 
                     case '6':
-                        guestManager.Delete(options);
+                        guestManager.Recover(options);
                         break;
 
                     case '0':

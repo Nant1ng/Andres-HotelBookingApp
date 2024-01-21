@@ -7,7 +7,7 @@ namespace HotelBooking
         static void Main(string[] args)
         {
             Console.Title = "Hotel Santana";
-            //Launch.Loading();
+            Launch.Loading();
             App.Run();
         }
     }

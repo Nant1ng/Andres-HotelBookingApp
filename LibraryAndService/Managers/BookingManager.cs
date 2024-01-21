@@ -16,6 +16,7 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Create a Booking.");
+                    Console.WriteLine("Write exit if you want to go back.");
                     Console.WriteLine();
 
                     foreach (Guest guest in dbContext.Guest
@@ -27,8 +28,9 @@ namespace LibraryAndService.Managers
 
                     Console.WriteLine();
                     Console.Write("Enter Guest Id: ");
+                    string? guestIdInput = Console.ReadLine();
 
-                    if (int.TryParse(Console.ReadLine(), out int guestId))
+                    if (int.TryParse(guestIdInput, out int guestId))
                     {
                         Guest? guest = dbContext.Guest
                             .Find(guestId);
@@ -41,16 +43,21 @@ namespace LibraryAndService.Managers
                             if (existingBooking == null)
                             {
                                 Console.Write("Enter Check-in Date (yyyy-mm-dd): ");
+                                string? checkInInput = Console.ReadLine();
+                                DateOnly DateOfTheDay = DateOnly.FromDateTime(DateTime.Now);
 
-                                if (DateOnly.TryParse(Console.ReadLine(), out DateOnly checkInDate))
+
+                                if (DateOnly.TryParse(checkInInput, out DateOnly checkInDate) && checkInDate > DateOfTheDay)
                                 {
                                     Console.Write("Enter Check-out Date (yyyy-mm-dd): ");
+                                    string? checkOutInput = Console.ReadLine();
 
-                                    if (DateOnly.TryParse(Console.ReadLine(), out DateOnly checkOutDate) || checkOutDate >= checkInDate)
+                                    if (DateOnly.TryParse(checkOutInput, out DateOnly checkOutDate) && checkOutDate > checkInDate)
                                     {
                                         Console.Write("Enter the number of guests (1-4): ");
+                                        string? numberOfGuestInput = Console.ReadLine();
 
-                                        if (byte.TryParse(Console.ReadLine(), out byte amountOfGuests) || amountOfGuests > 0 || amountOfGuests < 5)
+                                        if (byte.TryParse(numberOfGuestInput, out byte amountOfGuests) && amountOfGuests > 0 & amountOfGuests < 5)
                                         {
                                             List<Room> availableRooms = dbContext.Room
                                                 .Where(room => (amountOfGuests <= 2
@@ -75,8 +82,9 @@ namespace LibraryAndService.Managers
 
                                                 Console.WriteLine();
                                                 Console.Write("Enter a Room Id: ");
+                                                string? roomIdInput = Console.ReadLine();
 
-                                                if (int.TryParse(Console.ReadLine(), out int roomId))
+                                                if (int.TryParse(roomIdInput, out int roomId))
                                                 {
                                                     Room? roomToBook = dbContext.Room.Find(roomId);
 
@@ -92,44 +100,112 @@ namespace LibraryAndService.Managers
                                                         if (roomToBook.RoomSize > 20)
                                                         {
                                                             Console.WriteLine("Do you want an extra bed? (None, OneExtraBed, TwoExtraBeds): ");
-                                                            if (Enum.TryParse(Console.ReadLine(), out AmountOfBed extraBedChoice))
+
+                                                            int number = 0;
+
+                                                            foreach (AmountOfBed amountOfBed in Enum.GetValues(typeof(AmountOfBed)))
+                                                                Console.WriteLine($"{++number} - {amountOfBed}");
+
+                                                            char? userInput = Console.ReadKey().KeyChar;
+
+                                                            switch (userInput)
                                                             {
-                                                                extraBed = extraBedChoice;
+                                                                case '1':
+                                                                    extraBed = AmountOfBed.None;
+                                                                    break;
+                                                                case '2':
+                                                                    extraBed = AmountOfBed.OneExtraBed;
+                                                                    break;
+                                                                case '3':
+                                                                    extraBed = AmountOfBed.TwoExtraBeds;
+                                                                    break;
+                                                                default:
+                                                                    Console.Clear();
+                                                                    Console.ForegroundColor = ConsoleColor.Red;
+                                                                    Console.WriteLine("Invalid Alternative.");
+                                                                    Console.ResetColor();
+                                                                    continue;
                                                             }
+
+                                                            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+                                                            DateOnly deadline = today.AddDays(10);
+
+                                                            int numberOfDays = (checkOutDate.ToDateTime(TimeOnly.MinValue) - checkInDate.ToDateTime(TimeOnly.MinValue)).Days;
+
+
+                                                            decimal totalCost = roomToBook.Price * numberOfDays;
+
+                                                            Invoice invoice = new Invoice
+                                                            {
+                                                                Total = totalCost,
+                                                                Deadline = deadline,
+                                                                IsPayed = false,
+                                                                IsActive = true,
+                                                            };
+                                                            dbContext.Invoice.Add(invoice);
+
+                                                            Booking booking = new Booking(checkInDate, checkOutDate, amountOfGuests, extraBed, true)
+                                                            {
+                                                                Guest = guest,
+                                                                Room = roomToBook,
+                                                                Invoice = invoice
+                                                            };
+
+                                                            dbContext.Booking.Add(booking);
+                                                            dbContext.SaveChanges();
+
+                                                            Console.WriteLine();
+                                                            Console.ForegroundColor = ConsoleColor.Green;
+                                                            Console.WriteLine($"Booking and Invoice created successfully for Guest ID {guestId}.");
+                                                            Console.ResetColor();
+
+                                                            isRunning = false;
+
+                                                            Console.WriteLine();
+                                                            Console.WriteLine("Press any key to go back.");
+                                                            Console.ReadKey();
+                                                            Console.Clear();
                                                         }
-
-                                                        DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-                                                        DateOnly deadline = today.AddDays(10);
-
-                                                        Invoice invoice = new Invoice
+                                                        else
                                                         {
-                                                            Total = roomToBook.Price,
-                                                            Deadline = deadline,
-                                                            IsPayed = false,
-                                                            IsActive = true,
-                                                        };
-                                                        dbContext.Invoice.Add(invoice);
+                                                            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+                                                            DateOnly deadline = today.AddDays(10);
 
-                                                        Booking booking = new Booking(checkInDate, checkOutDate, amountOfGuests, extraBed, true)
-                                                        {
-                                                            Guest = guest,
-                                                            Room = roomToBook,
-                                                            Invoice = invoice
-                                                        };
+                                                            int numberOfDays = (checkOutDate.ToDateTime(TimeOnly.MinValue) - checkInDate.ToDateTime(TimeOnly.MinValue)).Days;
 
-                                                        dbContext.Booking.Add(booking);
-                                                        dbContext.SaveChanges();
 
-                                                        Console.ForegroundColor = ConsoleColor.Green;
-                                                        Console.WriteLine($"Booking and Invoice created successfully for Guest ID {guestId}.");
-                                                        Console.ResetColor();
+                                                            decimal totalCost = roomToBook.Price * numberOfDays;
 
-                                                        isRunning = false;
+                                                            Invoice invoice = new Invoice
+                                                            {
+                                                                Total = totalCost,
+                                                                Deadline = deadline,
+                                                                IsPayed = false,
+                                                                IsActive = true,
+                                                            };
+                                                            dbContext.Invoice.Add(invoice);
 
-                                                        Console.WriteLine();
-                                                        Console.WriteLine("Press any key to go back.");
-                                                        Console.ReadKey();
-                                                        Console.Clear();
+                                                            Booking booking = new Booking(checkInDate, checkOutDate, amountOfGuests, extraBed, true)
+                                                            {
+                                                                Guest = guest,
+                                                                Room = roomToBook,
+                                                                Invoice = invoice
+                                                            };
+
+                                                            dbContext.Booking.Add(booking);
+                                                            dbContext.SaveChanges();
+
+                                                            Console.ForegroundColor = ConsoleColor.Green;
+                                                            Console.WriteLine($"Booking and Invoice created successfully for Guest ID {guestId}.");
+                                                            Console.ResetColor();
+
+                                                            isRunning = false;
+
+                                                            Console.WriteLine();
+                                                            Console.WriteLine("Press any key to go back.");
+                                                            Console.ReadKey();
+                                                            Console.Clear();
+                                                        }
                                                     }
                                                     else
                                                     {
@@ -138,6 +214,11 @@ namespace LibraryAndService.Managers
                                                         Console.WriteLine($"Room with Id {roomId} is not available for the selected dates.");
                                                         Console.ResetColor();
                                                     }
+                                                }
+                                                else if (string.Equals(roomIdInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                                {
+                                                    isRunning = false;
+                                                    Console.Clear();
                                                 }
                                                 else
                                                 {
@@ -155,6 +236,11 @@ namespace LibraryAndService.Managers
                                                 Console.ResetColor();
                                             }
                                         }
+                                        else if (string.Equals(numberOfGuestInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            isRunning = false;
+                                            Console.Clear();
+                                        }
                                         else
                                         {
                                             Console.Clear();
@@ -163,6 +249,11 @@ namespace LibraryAndService.Managers
                                             Console.ResetColor();
                                         }
                                     }
+                                    else if (string.Equals(checkOutInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        isRunning = false;
+                                        Console.Clear();
+                                    }
                                     else
                                     {
                                         Console.Clear();
@@ -170,6 +261,11 @@ namespace LibraryAndService.Managers
                                         Console.WriteLine("Invalid input for Check-out Date.");
                                         Console.ResetColor();
                                     }
+                                }
+                                else if (string.Equals(checkInInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    isRunning = false;
+                                    Console.Clear();
                                 }
                                 else
                                 {
@@ -196,6 +292,11 @@ namespace LibraryAndService.Managers
                             Console.ResetColor();
                         }
                     }
+                    else if (string.Equals(guestIdInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
+                    }
                     else
                     {
                         Console.Clear();
@@ -214,6 +315,8 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Get a Booking.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
 
                     foreach (Booking booking in dbContext.Booking
                         .Include(b => b.Guest)
@@ -225,7 +328,8 @@ namespace LibraryAndService.Managers
                     Console.WriteLine();
 
                     Console.Write("Enter a Booking Id: ");
-                    if (int.TryParse(Console.ReadLine(), out int bookingId))
+                    string? userInput = Console.ReadLine();
+                    if (int.TryParse(userInput, out int bookingId))
                     {
                         Booking? booking = dbContext.Booking
                             .Include(b => b.Guest)
@@ -253,6 +357,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine($"No Booking found with Id {bookingId}.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
@@ -298,6 +407,9 @@ namespace LibraryAndService.Managers
                 {
                     Console.WriteLine("Update a Booking.");
                     Console.WriteLine("FYI, you can't change the Guest Id on the booking and you can't Update a booking that's Not Active.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
+
                     foreach (Booking booking in dbContext.Booking
                     .Include(b => b.Guest)
                     .Include(b => b.Room)
@@ -309,24 +421,29 @@ namespace LibraryAndService.Managers
 
                     Console.WriteLine();
                     Console.Write("Enter a Booking Id you want to Update: ");
+                    string? userInput = Console.ReadLine();
 
-                    if (int.TryParse(Console.ReadLine(), out int bookingId))
+                    if (int.TryParse(userInput, out int bookingId))
                     {
                         Booking? bookingToUpdate = dbContext.Booking.Find(bookingId);
 
                         if (bookingToUpdate != null && bookingToUpdate.IsActive == true)
                         {
                             Console.Write("Enter Check-in Date (yyyy-mm-dd): ");
+                            string? checkInInput = Console.ReadLine();
+                            DateOnly DateOfTheDay = DateOnly.FromDateTime(DateTime.Now);
 
-                            if (DateOnly.TryParse(Console.ReadLine(), out DateOnly checkInDateUpdate))
+                            if (DateOnly.TryParse(checkInInput, out DateOnly checkInDateUpdate) && checkInDateUpdate > DateOfTheDay)
                             {
                                 Console.Write("Enter Check-out Date (yyyy-mm-dd): ");
+                                string? checkOutInput = Console.ReadLine();
 
-                                if (DateOnly.TryParse(Console.ReadLine(), out DateOnly checkOutDateUpdate) || checkOutDateUpdate >= checkInDateUpdate)
+                                if (DateOnly.TryParse(checkOutInput, out DateOnly checkOutDateUpdate) && checkOutDateUpdate > checkInDateUpdate)
                                 {
                                     Console.Write("Enter the number of guests (1-4): ");
+                                    string? numberOfGuestInput = Console.ReadLine();
 
-                                    if (byte.TryParse(Console.ReadLine(), out byte amountOfGuestsUpdate) || amountOfGuestsUpdate > 0 || amountOfGuestsUpdate < 5)
+                                    if (byte.TryParse(numberOfGuestInput, out byte amountOfGuestsUpdate) && amountOfGuestsUpdate > 0 && amountOfGuestsUpdate < 5)
                                     {
                                         List<Room> availableRooms = dbContext.Room
                                             .Where(room => (amountOfGuestsUpdate <= 2
@@ -351,8 +468,9 @@ namespace LibraryAndService.Managers
 
                                             Console.WriteLine();
                                             Console.Write("Enter a Room Id: ");
+                                            string? roomIdInput = Console.ReadLine();
 
-                                            if (int.TryParse(Console.ReadLine(), out int roomIdUpdate))
+                                            if (int.TryParse(roomIdInput, out int roomIdUpdate))
                                             {
                                                 Room? roomToBookUpdate = dbContext.Room.Find(roomIdUpdate);
 
@@ -369,35 +487,86 @@ namespace LibraryAndService.Managers
                                                     if (roomToBookUpdate.RoomSize > 20)
                                                     {
                                                         Console.WriteLine("Do you want an extra bed? (None, OneExtraBed, TwoExtraBeds): ");
-                                                        if (Enum.TryParse(Console.ReadLine(), out AmountOfBed extraBedChoice))
+
+                                                        int number = 0;
+
+                                                        foreach (AmountOfBed amountOfBed in Enum.GetValues(typeof(AmountOfBed)))
+                                                            Console.WriteLine($"{++number} - {amountOfBed}");
+
+                                                        char? amountOfBedChoice = Console.ReadKey().KeyChar;
+
+                                                        switch (amountOfBedChoice)
                                                         {
-                                                            extraBedUpdate = extraBedChoice;
+                                                            case '1':
+                                                                extraBedUpdate = AmountOfBed.None;
+                                                                break;
+                                                            case '2':
+                                                                extraBedUpdate = AmountOfBed.OneExtraBed;
+                                                                break;
+                                                            case '3':
+                                                                extraBedUpdate = AmountOfBed.TwoExtraBeds;
+                                                                break;
+                                                            default:
+                                                                Console.Clear();
+                                                                Console.ForegroundColor = ConsoleColor.Red;
+                                                                Console.WriteLine("Invalid Alternative.");
+                                                                Console.ResetColor();
+                                                                continue;
                                                         }
+
+                                                        DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+                                                        DateOnly newDeadline = today.AddDays(10);
+
+                                                        bookingToUpdate.StartDate = checkInDateUpdate;
+                                                        bookingToUpdate.EndDate = checkOutDateUpdate;
+                                                        bookingToUpdate.AmountOfGuest = amountOfGuestsUpdate;
+                                                        bookingToUpdate.ExtraBed = extraBedUpdate;
+
+                                                        bookingToUpdate.Invoice.Deadline = newDeadline;
+                                                        bookingToUpdate.Invoice.Total = roomToBookUpdate.Price;
+
+                                                        dbContext.SaveChanges();
+
+                                                        Console.WriteLine();
+                                                        Console.ForegroundColor = ConsoleColor.Green;
+                                                        Console.WriteLine($"Booking and Invoice was successfully Updated.");
+                                                        Console.ResetColor();
+
+                                                        isRunning = false;
+
+                                                        Console.WriteLine();
+                                                        Console.WriteLine("Press any key to go back.");
+                                                        Console.ReadKey();
+                                                        Console.Clear();
+                                                    }
+                                                    else
+                                                    {
+                                                        DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+                                                        DateOnly newDeadline = today.AddDays(10);
+
+                                                        bookingToUpdate.StartDate = checkInDateUpdate;
+                                                        bookingToUpdate.EndDate = checkOutDateUpdate;
+                                                        bookingToUpdate.AmountOfGuest = amountOfGuestsUpdate;
+                                                        bookingToUpdate.ExtraBed = extraBedUpdate;
+
+                                                        bookingToUpdate.Invoice.Deadline = newDeadline;
+                                                        bookingToUpdate.Invoice.Total = roomToBookUpdate.Price;
+
+                                                        dbContext.SaveChanges();
+
+                                                        Console.ForegroundColor = ConsoleColor.Green;
+                                                        Console.WriteLine($"Booking and Invoice was successfully Updated.");
+                                                        Console.ResetColor();
+
+                                                        isRunning = false;
+
+                                                        Console.WriteLine();
+                                                        Console.WriteLine("Press any key to go back.");
+                                                        Console.ReadKey();
+                                                        Console.Clear();
                                                     }
 
-                                                    DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-                                                    DateOnly newDeadline = today.AddDays(10);
 
-                                                    bookingToUpdate.StartDate = checkInDateUpdate;
-                                                    bookingToUpdate.EndDate = checkOutDateUpdate;
-                                                    bookingToUpdate.AmountOfGuest = amountOfGuestsUpdate;
-                                                    bookingToUpdate.ExtraBed = extraBedUpdate;
-
-                                                    bookingToUpdate.Invoice.Deadline = newDeadline;
-                                                    bookingToUpdate.Invoice.Total = roomToBookUpdate.Price;
-
-                                                    dbContext.SaveChanges();
-
-                                                    Console.ForegroundColor = ConsoleColor.Green;
-                                                    Console.WriteLine($"Booking and Invoice was successfully Updated.");
-                                                    Console.ResetColor();
-
-                                                    isRunning = false;
-
-                                                    Console.WriteLine();
-                                                    Console.WriteLine("Press any key to go back.");
-                                                    Console.ReadKey();
-                                                    Console.Clear();
                                                 }
                                                 else
                                                 {
@@ -406,6 +575,11 @@ namespace LibraryAndService.Managers
                                                     Console.WriteLine($"Room with Id {roomIdUpdate} is not available for the selected dates.");
                                                     Console.ResetColor();
                                                 }
+                                            }
+                                            else if (string.Equals(roomIdInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                isRunning = false;
+                                                Console.Clear();
                                             }
                                             else
                                             {
@@ -423,6 +597,11 @@ namespace LibraryAndService.Managers
                                             Console.ResetColor();
                                         }
                                     }
+                                    else if (string.Equals(numberOfGuestInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        isRunning = false;
+                                        Console.Clear();
+                                    }
                                     else
                                     {
                                         Console.Clear();
@@ -431,6 +610,11 @@ namespace LibraryAndService.Managers
                                         Console.ResetColor();
                                     }
                                 }
+                                else if (string.Equals(checkOutInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    isRunning = false;
+                                    Console.Clear();
+                                }
                                 else
                                 {
                                     Console.Clear();
@@ -438,6 +622,11 @@ namespace LibraryAndService.Managers
                                     Console.WriteLine("Invalid input for Check-out Date.");
                                     Console.ResetColor();
                                 }
+                            }
+                            else if (string.Equals(checkInInput, "exit", StringComparison.OrdinalIgnoreCase))
+                            {
+                                isRunning = false;
+                                Console.Clear();
                             }
                             else
                             {
@@ -454,6 +643,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine($"No Booking found with Id {bookingId}.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
@@ -474,6 +668,8 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Delete a Booking.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
 
                     foreach (Booking booking in dbContext.Booking.Where(b => b.IsActive)
                         .Include(b => b.Guest)
@@ -484,8 +680,9 @@ namespace LibraryAndService.Managers
                     }
                     Console.WriteLine();
                     Console.Write("Write the Booking Id of the Booking you want to Delete: ");
+                    string? userInput = Console.ReadLine();
 
-                    if (int.TryParse(Console.ReadLine(), out int bookingId))
+                    if (int.TryParse(userInput, out int bookingId))
                     {
                         Booking? bookingToDelete = dbContext.Booking
                             .Include(b => b.Invoice)
@@ -515,6 +712,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine($"No Booking found with Id {bookingId} or it's Not Active.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {

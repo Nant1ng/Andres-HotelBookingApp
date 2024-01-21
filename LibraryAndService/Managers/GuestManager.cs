@@ -15,18 +15,19 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Create a Guest.");
+                    Console.WriteLine("Write exit if you want to go back.");
                     Console.WriteLine();
                     Console.Write("First Name: ");
                     string? firstNameInput = Console.ReadLine();
 
-                    if (!string.IsNullOrWhiteSpace(firstNameInput))
+                    if (!string.IsNullOrWhiteSpace(firstNameInput) && firstNameInput.Length > 1 && !string.Equals(firstNameInput, "exit", StringComparison.OrdinalIgnoreCase))
                     {
                         string firstName = firstNameInput;
 
                         Console.Write("Last Name: ");
                         string? lastNameInput = Console.ReadLine();
 
-                        if (!string.IsNullOrWhiteSpace(lastNameInput))
+                        if (!string.IsNullOrWhiteSpace(lastNameInput) && lastNameInput.Length > 1 && !string.Equals(lastNameInput, "exit", StringComparison.OrdinalIgnoreCase))
                         {
                             string lastName = lastNameInput;
 
@@ -41,7 +42,7 @@ namespace LibraryAndService.Managers
                                 Console.Write("Email: ");
                                 string? emailInput = Console.ReadLine();
 
-                                if (!string.IsNullOrWhiteSpace(emailInput))
+                                if (!string.IsNullOrWhiteSpace(emailInput) && !string.Equals(emailInput, "exit", StringComparison.OrdinalIgnoreCase))
                                 {
                                     string email = emailInput;
 
@@ -49,28 +50,55 @@ namespace LibraryAndService.Managers
                                     Console.Write("Age: ");
                                     string? ageInput = Console.ReadLine();
 
-                                    if (byte.TryParse(ageInput, out byte age))
+                                    if (byte.TryParse(ageInput, out byte age) && age > 0)
                                     {
                                         dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, age, true));
                                         dbContext.SaveChanges();
+
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.WriteLine("Guest was Successfully Created.");
+                                        Console.ResetColor();
+
+                                        isRunning = false;
+
+                                        Console.WriteLine();
+                                        Console.WriteLine("Press any key to go back.");
+                                        Console.ReadKey();
+                                        Console.Clear();
                                     }
-                                    else
+                                    else if (string.IsNullOrWhiteSpace(ageInput))
                                     {
                                         dbContext.Guest.Add(new Guest(firstName, lastName, phoneNumber, email, null, true));
                                         dbContext.SaveChanges();
+
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.WriteLine("Guest was Successfully Created.");
+                                        Console.ResetColor();
+
+                                        isRunning = false;
+
+                                        Console.WriteLine();
+                                        Console.WriteLine("Press any key to go back.");
+                                        Console.ReadKey();
+                                        Console.Clear();
                                     }
-
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.WriteLine("Guest was Successfully Created.");
-                                    Console.ResetColor();
-
+                                    else if (string.Equals(ageInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        isRunning = false;
+                                        Console.Clear();
+                                    }
+                                    else
+                                    {
+                                        Console.Clear();
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("Invalid input. Please enter a valid age (a positive number) or leave blank.");
+                                        Console.ResetColor();
+                                    }
+                                }
+                                else if (string.Equals(emailInput, "exit", StringComparison.OrdinalIgnoreCase))
+                                {
                                     isRunning = false;
-
-                                    Console.WriteLine();
-                                    Console.WriteLine("Press any key to go back.");
-                                    Console.ReadKey();
                                     Console.Clear();
-
                                 }
                                 else
                                 {
@@ -80,6 +108,11 @@ namespace LibraryAndService.Managers
                                     Console.ResetColor();
                                 }
                             }
+                            else if (string.Equals(phoneNumberInput, "exit", StringComparison.OrdinalIgnoreCase))
+                            {
+                                isRunning = false;
+                                Console.Clear();
+                            }
                             else
                             {
                                 Console.Clear();
@@ -88,19 +121,29 @@ namespace LibraryAndService.Managers
                                 Console.ResetColor();
                             }
                         }
+                        else if (string.Equals(lastNameInput, "exit", StringComparison.OrdinalIgnoreCase))
+                        {
+                            isRunning = false;
+                            Console.Clear();
+                        }
                         else
                         {
                             Console.Clear();
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Invalid input. Last Name cannot be blank.");
+                            Console.WriteLine("Invalid input. Last Name must be longer than one character.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(firstNameInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Invalid input. First Name cannot be blank.");
+                        Console.WriteLine("Invalid input. First Name must be longer than one character.");
                         Console.ResetColor();
                     }
 
@@ -115,6 +158,8 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Get a Guest.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
 
                     foreach (Guest guest in dbContext.Guest)
                     {
@@ -126,11 +171,11 @@ namespace LibraryAndService.Managers
                     Console.WriteLine("Separate the First Name and numbers with ,");
                     Console.Write("First Name and 4 digits: ");
 
-                    string? input = Console.ReadLine();
+                    string? userInput = Console.ReadLine();
 
-                    if (!string.IsNullOrEmpty(input))
+                    if (!string.IsNullOrEmpty(userInput) && !string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
                     {
-                        string[] inputParts = input.Split(',');
+                        string[] inputParts = userInput.Split(',');
 
                         if (inputParts.Length == 2)
                         {
@@ -169,6 +214,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine("Invalid input format. Please separate First Name and 4 digits with a comma.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
@@ -221,6 +271,8 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Update a Guest.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
 
                     foreach (Guest guest in dbContext.Guest)
                     {
@@ -229,7 +281,8 @@ namespace LibraryAndService.Managers
                     Console.WriteLine();
 
                     Console.Write("Write the Id of the Guest you want to update: ");
-                    if (int.TryParse(Console.ReadLine(), out int guestId))
+                    string? userInput = Console.ReadLine();
+                    if (int.TryParse(userInput, out int guestId))
                     {
                         Guest? guestToUpdate = dbContext.Guest.Find(guestId);
 
@@ -238,12 +291,12 @@ namespace LibraryAndService.Managers
                             Console.Write("First Name: ");
                             string? firstNameUpdate = Console.ReadLine();
 
-                            if (!string.IsNullOrWhiteSpace(firstNameUpdate))
+                            if (!string.IsNullOrWhiteSpace(firstNameUpdate) && !string.Equals(firstNameUpdate, "exit", StringComparison.OrdinalIgnoreCase))
                             {
                                 Console.Write("Last Name: ");
                                 string? lastNameUpdate = Console.ReadLine();
 
-                                if (!string.IsNullOrWhiteSpace(lastNameUpdate))
+                                if (!string.IsNullOrWhiteSpace(lastNameUpdate) && !string.Equals(lastNameUpdate, "exit", StringComparison.OrdinalIgnoreCase))
                                 {
                                     Console.WriteLine("Phone Number can only contain numbers and whitespace.");
                                     Console.Write("Phone Number: ");
@@ -254,13 +307,13 @@ namespace LibraryAndService.Managers
                                         Console.Write("Email: ");
                                         string? emailUpdate = Console.ReadLine();
 
-                                        if (!string.IsNullOrWhiteSpace(emailUpdate))
+                                        if (!string.IsNullOrWhiteSpace(emailUpdate) && !string.Equals(emailUpdate, "exit", StringComparison.OrdinalIgnoreCase))
                                         {
                                             Console.WriteLine("Age can be left blank.");
                                             Console.Write("Age: ");
                                             string? ageUpdate = Console.ReadLine();
 
-                                            if (byte.TryParse(ageUpdate, out byte age))
+                                            if (byte.TryParse(ageUpdate, out byte age) && age > 0)
                                             {
                                                 guestToUpdate.FirstName = firstNameUpdate;
                                                 guestToUpdate.LastName = lastNameUpdate;
@@ -269,8 +322,19 @@ namespace LibraryAndService.Managers
                                                 guestToUpdate.Age = age;
                                                 guestToUpdate.IsActive = true;
                                                 dbContext.SaveChanges();
+
+                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                Console.WriteLine($"Guest with Id {guestId} has been updated.");
+                                                Console.ResetColor();
+
+                                                isRunning = false;
+
+                                                Console.WriteLine();
+                                                Console.WriteLine("Press any key to go back.");
+                                                Console.ReadKey();
+                                                Console.Clear();
                                             }
-                                            else
+                                            else if (string.IsNullOrWhiteSpace(ageUpdate))
                                             {
                                                 guestToUpdate.FirstName = firstNameUpdate;
                                                 guestToUpdate.LastName = lastNameUpdate;
@@ -279,17 +343,34 @@ namespace LibraryAndService.Managers
                                                 guestToUpdate.Age = null;
                                                 guestToUpdate.IsActive = true;
                                                 dbContext.SaveChanges();
+
+                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                Console.WriteLine($"Guest with Id {guestId} has been updated.");
+                                                Console.ResetColor();
+
+                                                isRunning = false;
+
+                                                Console.WriteLine();
+                                                Console.WriteLine("Press any key to go back.");
+                                                Console.ReadKey();
+                                                Console.Clear();
                                             }
-
-                                            Console.ForegroundColor = ConsoleColor.Green;
-                                            Console.WriteLine($"Guest with Id {guestId} has been updated.");
-                                            Console.ResetColor();
-
+                                            else if (string.Equals(ageUpdate, "exit", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                isRunning = false;
+                                                Console.Clear();
+                                            }
+                                            else
+                                            {
+                                                Console.Clear();
+                                                Console.ForegroundColor = ConsoleColor.Red;
+                                                Console.WriteLine("Invalid input. Please enter a valid age (a positive number) or leave blank.");
+                                                Console.ResetColor();
+                                            }
+                                        }
+                                        else if (string.Equals(emailUpdate, "exit", StringComparison.OrdinalIgnoreCase))
+                                        {
                                             isRunning = false;
-
-                                            Console.WriteLine();
-                                            Console.WriteLine("Press any key to go back.");
-                                            Console.ReadKey();
                                             Console.Clear();
                                         }
                                         else
@@ -300,6 +381,11 @@ namespace LibraryAndService.Managers
                                             Console.ResetColor();
                                         }
                                     }
+                                    else if (string.Equals(phoneNumberUpdate, "exit", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        isRunning = false;
+                                        Console.Clear();
+                                    }
                                     else
                                     {
                                         Console.Clear();
@@ -308,6 +394,11 @@ namespace LibraryAndService.Managers
                                         Console.ResetColor();
                                     }
                                 }
+                                else if (string.Equals(lastNameUpdate, "exit", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    isRunning = false;
+                                    Console.Clear();
+                                }
                                 else
                                 {
                                     Console.Clear();
@@ -315,6 +406,11 @@ namespace LibraryAndService.Managers
                                     Console.WriteLine("Invalid input. Last Name cannot be blank.");
                                     Console.ResetColor();
                                 }
+                            }
+                            else if (string.Equals(firstNameUpdate, "exit", StringComparison.OrdinalIgnoreCase))
+                            {
+                                isRunning = false;
+                                Console.Clear();
                             }
                             else
                             {
@@ -331,6 +427,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine($"No Guest found with Id {guestId}.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
@@ -350,22 +451,25 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Delete a Guest.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
 
-                    foreach (Guest guest in dbContext.Guest.Where(g => g.IsActive))
+                    foreach (Booking b in dbContext.Booking.Include(b => b.Guest).Where(b => b.Guest.IsActive && b.IsActive == false))
                     {
-                        Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}, Is Active: {guest.IsActive}");
+                        Console.WriteLine($"Id: {b.Guest.Id}, Full Name: {b.Guest.FirstName} {b.Guest.LastName}, Phone Number: {b.Guest.PhoneNumber}, Is Active: {b.Guest.IsActive}");
                     }
                     Console.WriteLine();
                     Console.Write("Write the Guest Id of the Guest you want to Delete: ");
+                    string? userInput = Console.ReadLine();
 
-                    if (int.TryParse(Console.ReadLine(), out int guestId))
+                    if (int.TryParse(userInput, out int guestId))
                     {
                         Guest? guestToDelete = dbContext.Guest.Find(guestId);
 
                         if (guestToDelete != null && guestToDelete.IsActive == true)
                         {
 
-                            bool activeBooking = dbContext.Booking.Any(b => b.Guest.Id == guestId && b.IsActive);
+                            bool activeBooking = dbContext.Booking.Any(b => b.Guest.Id == guestId && b.IsActive == true);
 
                             if (!activeBooking)
                             {
@@ -399,6 +503,11 @@ namespace LibraryAndService.Managers
                             Console.ResetColor();
                         }
                     }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
+                    }
                     else
                     {
                         Console.Clear();
@@ -417,6 +526,8 @@ namespace LibraryAndService.Managers
                 do
                 {
                     Console.WriteLine("Recover a Guest.");
+                    Console.WriteLine("Write exit if you want to go back.");
+                    Console.WriteLine();
                     foreach (Guest guest in dbContext.Guest.Where(g => !g.IsActive))
                     {
                         Console.WriteLine($"Id: {guest.Id}, Full Name: {guest.FirstName} {guest.LastName}, Phone Number: {guest.PhoneNumber}");
@@ -424,8 +535,9 @@ namespace LibraryAndService.Managers
 
                     Console.WriteLine();
                     Console.Write("Enter the Guest Id to recover: ");
+                    string? userInput = Console.ReadLine();
 
-                    if (int.TryParse(Console.ReadLine(), out int guestId))
+                    if (int.TryParse(userInput, out int guestId))
                     {
                         Guest? guestToRecover = dbContext.Guest.Find(guestId);
 
@@ -452,6 +564,11 @@ namespace LibraryAndService.Managers
                             Console.WriteLine($"Guest with Id {guestId} dose not exist or already active.");
                             Console.ResetColor();
                         }
+                    }
+                    else if (string.Equals(userInput, "exit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isRunning = false;
+                        Console.Clear();
                     }
                     else
                     {
